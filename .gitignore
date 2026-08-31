@@ -1,0 +1,5 @@
+.claude/scheduled_tasks.lock
+
+# OS cruft
+.DS_Store
+Thumbs.db

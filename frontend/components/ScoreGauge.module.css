@@ -1,0 +1,136 @@
+.wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.ticks {
+  position: relative;
+  height: 220px;
+  width: 20px;
+}
+
+.tick {
+  position: absolute;
+  transform: translateY(50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.tube {
+  position: relative;
+  width: 30px;
+  height: 220px;
+  border: 1px solid var(--line-strong);
+  border-radius: 15px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0.3;
+}
+
+.zone[data-band="Cold"] {
+  background: var(--cold);
+}
+
+.zone[data-band="Cool"] {
+  background: var(--cool);
+}
+
+.zone[data-band="Warm"] {
+  background: var(--warm);
+}
+
+.zone[data-band="Hot"] {
+  background: var(--hot);
+}
+
+.mercury {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  border-radius: 12px;
+  transition: height 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mercury[data-band="Cold"] {
+  background: var(--cold);
+}
+
+.mercury[data-band="Cool"] {
+  background: var(--cool);
+}
+
+.mercury[data-band="Warm"] {
+  background: var(--warm);
+}
+
+.mercury[data-band="Hot"] {
+  background: var(--hot);
+}
+
+.pointer {
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  height: 2px;
+  background: var(--ink);
+  transition: bottom 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.readout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.scoreValue {
+  font-family: var(--font-mono);
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.scoreMax {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: -6px;
+}
+
+.bandPill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: var(--ink);
+}
+
+.bandPill[data-band="Cold"] {
+  background: var(--cold);
+}
+
+.bandPill[data-band="Cool"] {
+  background: var(--cool);
+}
+
+.bandPill[data-band="Warm"] {
+  background: var(--warm);
+}
+
+.bandPill[data-band="Hot"] {
+  background: var(--hot);
+}

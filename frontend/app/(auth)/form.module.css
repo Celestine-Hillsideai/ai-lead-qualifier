@@ -1,0 +1,81 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
+  padding: 28px;
+  border-radius: var(--radius);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.input {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 9px 10px;
+}
+
+.input:focus {
+  border-color: var(--cold);
+}
+
+.submit {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--accent-hover);
+}
+
+.error {
+  font-size: 13px;
+  color: var(--hot);
+}
+
+.message {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.switch {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.switch a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.switch a:hover {
+  text-decoration: underline;
+}

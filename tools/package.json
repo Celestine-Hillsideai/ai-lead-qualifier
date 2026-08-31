@@ -1,0 +1,21 @@
+{
+  "name": "ai-lead-qualifier-trigger",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "trigger.dev dev",
+    "deploy": "trigger.dev deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trigger.dev/sdk": "4.5.14",
+    "openai": "^7.8.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "trigger.dev": "4.5.14",
+    "typescript": "^5.9.3"
+  }
+}
