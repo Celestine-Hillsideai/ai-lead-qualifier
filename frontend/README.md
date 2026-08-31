@@ -84,8 +84,12 @@ sync Stripe events:
 cd tools
 npx trigger.dev@latest dev
 
-# terminal 2 — forwards Stripe webhook events to your local server
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+# terminal 2 — forwards Stripe webhook events to your local server.
+# --api-key pins this to the same Stripe account as STRIPE_SECRET_KEY in
+# .env.local — the CLI's default OAuth context can silently point at a
+# different account/sandbox otherwise, which forwards events that never
+# match what the app actually created.
+stripe listen --api-key sk_test_... --forward-to localhost:3000/api/stripe/webhook
 
 # terminal 3 — this app
 cd frontend
