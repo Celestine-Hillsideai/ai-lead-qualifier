@@ -14,6 +14,8 @@ frontend/
     (auth)/login, (auth)/signup  email/password sign-in and sign-up forms
     auth/confirm/route.ts        email-confirmation link handler (Supabase Auth)
     api/qualify-lead/route.ts   server-side proxy: triggers qualify-lead, waits for the result
+    api/stripe/                 checkout, portal, and webhook routes (billing)
+    (protected)/billing/         current plan + upgrade/manage-billing UI
   proxy.ts                    session refresh + route protection (Next's `middleware` convention, renamed)
   components/                 LeadForm, ResultsDisplay, ScoreGauge, UserNav, etc.
   lib/
@@ -21,7 +23,7 @@ frontend/
     qualification-types.ts     mirrors the output type in ../tools/src/trigger/qualifyLead.ts
     buildLeadInput.ts          form values -> the LeadInput object sent to trigger.dev
     supabase/                  browser/server Supabase client factories + session refresh helper
-  supabase/schema.sql          the lead_scores table + RLS policies (paste into the SQL Editor)
+  supabase/schema.sql          the lead_scores + profiles tables and RLS policies (paste into the SQL Editor)
   .env.local.example           copy to .env.local and fill in the vars below
 ```
 
@@ -49,23 +51,46 @@ via Postgres Row Level Security — see `supabase/schema.sql`.
    deployment (shipping password auth with email confirmation off lets
    anyone sign up with an email address they don't own).
 3. Project Settings → API: copy the **Project URL** and **`anon public`**
-   key into `.env.local` (below). Never use the `service_role` key here.
+   key into `.env.local` (below). Also copy the **`service_role`** key into
+   `.env.local` as `SUPABASE_SERVICE_ROLE_KEY` — this key bypasses RLS, so
+   it must **never** be committed, sent to the browser, or used anywhere
+   except that one env var (it's read only by the Stripe webhook route).
 4. SQL Editor: paste and run `supabase/schema.sql`, once.
+
+## Billing (Stripe)
+
+Free tier: 2 qualifications/day. Paid tier: $29/month, unlimited — see
+[`../workflows/billing.md`](../workflows/billing.md) for the full rule set.
+Checkout and the billing portal are handled by `app/api/stripe/`; a webhook
+keeps plan status in `profiles` in sync with Stripe.
+
+**One-time setup:**
+
+1. Stripe dashboard → Product catalog: create a $29/month recurring Price,
+   copy its `price_...` id into `.env.local` as `STRIPE_PRICE_ID`.
+2. Developers → API keys: copy a **test-mode** secret key into
+   `STRIPE_SECRET_KEY`.
+3. Settings → Billing → Customer portal: enable it (allow at least
+   "Cancel subscription").
 
 ## Local development
 
-Run **both** of these at the same time — the deployed-looking flow needs a
-live worker to actually execute the task:
+Run all three of these at the same time — the deployed-looking flow needs a
+live worker to actually execute the task, and a live webhook forwarder to
+sync Stripe events:
 
 ```bash
 # terminal 1 — the trigger.dev worker for the qualify-lead task
 cd tools
 npx trigger.dev@latest dev
 
-# terminal 2 — this app
+# terminal 2 — forwards Stripe webhook events to your local server
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+
+# terminal 3 — this app
 cd frontend
 npm install
-cp .env.local.example .env.local   # fill in TRIGGER_SECRET_KEY and the Supabase vars
+cp .env.local.example .env.local   # fill in TRIGGER_SECRET_KEY, Supabase, and Stripe vars
 npm run dev
 ```
 
@@ -73,5 +98,11 @@ Get the dev `TRIGGER_SECRET_KEY` from the trigger.dev dashboard → your
 project (`proj_jttutwasmhutguvubkcy`) → **API Keys** (pick the Development
 environment key). Get the Supabase values from the project setup above.
 
+`stripe listen` prints a webhook signing secret (`whsec_...`) on startup —
+copy it into `.env.local` as `STRIPE_WEBHOOK_SECRET`. It's a different,
+ephemeral secret each time you run the command — not the same as a
+dashboard-registered production endpoint's signing secret.
+
 Open http://localhost:3000 — you'll land on `/login`. Sign up, then fill out
-a lead and click Analyze.
+a lead and click Analyze. Visit `/billing` to test the upgrade flow with
+Stripe's test card `4242 4242 4242 4242`.

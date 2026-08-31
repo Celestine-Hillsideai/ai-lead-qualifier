@@ -46,6 +46,11 @@ calls `tasks.trigger("qualify-lead", ...)`, polls for the run's result with
 was considered but only works from inside another trigger.dev task, not an
 external Next.js route — see the SDK's `docs/triggering.mdx`.)
 
+**Billing**: `frontend/app/api/stripe/` (`checkout`, `portal`, `webhook`
+routes) handles the free (2/day) vs. paid ($29/mo unlimited) tiers via
+Stripe Checkout/Billing Portal, with usage enforced in `qualify-lead/route.ts`.
+See [`workflows/billing.md`](workflows/billing.md).
+
 ## Lead data contract
 
 Locked in. The frontend form's field list — company name (required),

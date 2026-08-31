@@ -74,7 +74,8 @@ export interface ApiErrorBody {
       | "TRIGGER_UNAVAILABLE"
       | "TASK_FAILED"
       | "TIMEOUT"
-      | "BAD_OUTPUT";
+      | "BAD_OUTPUT"
+      | "QUOTA_EXCEEDED";
     message: string;
   };
 }

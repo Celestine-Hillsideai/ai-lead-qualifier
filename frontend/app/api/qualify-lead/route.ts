@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { tasks, runs } from "@trigger.dev/sdk";
 import { buildLeadInput } from "@/lib/buildLeadInput";
 import { createClient } from "@/lib/supabase/server";
+import { FREE_PLAN_DAILY_LIMIT, getTodayQualificationCount, getUserProfile } from "@/lib/subscription";
 import type { ApiErrorBody, ApiResponseBody, QualificationResult } from "@/lib/qualification-types";
 
 export const runtime = "nodejs";
@@ -26,6 +27,18 @@ export async function POST(request: Request): Promise<NextResponse<ApiResponseBo
 
   if (!user) {
     return errorResponse(401, "UNAUTHENTICATED", "Sign in to qualify leads.");
+  }
+
+  const profile = await getUserProfile(supabase, user.id);
+  if (profile.plan === "free") {
+    const todayCount = await getTodayQualificationCount(supabase, user.id);
+    if (todayCount >= FREE_PLAN_DAILY_LIMIT) {
+      return errorResponse(
+        402,
+        "QUOTA_EXCEEDED",
+        `You've used today's ${FREE_PLAN_DAILY_LIMIT} free qualifications. Upgrade to unlimited for $29/mo.`
+      );
+    }
   }
 
   const body = await request.json().catch(() => null);

@@ -5,8 +5,9 @@ import { Header, type AppStatus } from "@/components/Header";
 import { LeadForm } from "@/components/LeadForm";
 import { ResultsDisplay } from "@/components/ResultsDisplay";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { QuotaBanner } from "@/components/QuotaBanner";
 import { emptyLeadFormValues, type LeadFormValues } from "@/lib/leadFields";
-import type { ApiResponseBody, QualificationResult } from "@/lib/qualification-types";
+import type { ApiErrorBody, ApiResponseBody, QualificationResult } from "@/lib/qualification-types";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
   const [status, setStatus] = useState<AppStatus>("idle");
   const [result, setResult] = useState<QualificationResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<ApiErrorBody["error"]["code"] | null>(null);
   const [companyNameMissing, setCompanyNameMissing] = useState(false);
 
   const handleChange = (id: string, value: string) => {
@@ -31,6 +33,7 @@ export default function Home() {
 
     setStatus("submitting");
     setErrorMessage(null);
+    setErrorCode(null);
 
     try {
       const response = await fetch("/api/qualify-lead", {
@@ -45,6 +48,7 @@ export default function Home() {
         setStatus("success");
       } else {
         setErrorMessage(body.error.message);
+        setErrorCode(body.error.code);
         setStatus("error");
       }
     } catch {
@@ -57,11 +61,13 @@ export default function Home() {
     setValues(emptyLeadFormValues());
     setResult(null);
     setErrorMessage(null);
+    setErrorCode(null);
     setStatus("idle");
   };
 
   const handleRetry = () => {
     setErrorMessage(null);
+    setErrorCode(null);
     setStatus("idle");
   };
 
@@ -70,7 +76,12 @@ export default function Home() {
       <Header status={status} />
       <main className={styles.main}>
         {status === "success" && result && <ResultsDisplay result={result} onReset={handleReset} />}
-        {status === "error" && errorMessage && <ErrorBanner message={errorMessage} onRetry={handleRetry} />}
+        {status === "error" && errorCode === "QUOTA_EXCEEDED" && errorMessage && (
+          <QuotaBanner message={errorMessage} />
+        )}
+        {status === "error" && errorCode !== "QUOTA_EXCEEDED" && errorMessage && (
+          <ErrorBanner message={errorMessage} onRetry={handleRetry} />
+        )}
         {(status === "idle" || status === "submitting") && (
           <LeadForm
             values={values}

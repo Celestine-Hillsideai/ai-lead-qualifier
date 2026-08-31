@@ -35,6 +35,22 @@
   color: var(--muted);
 }
 
+.planBadge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  color: var(--muted);
+}
+
+.planBadge[data-plan="paid"] {
+  border-color: var(--cool);
+  color: var(--cool);
+}
+
 .signOut {
   background: none;
   border: 1px solid var(--line-strong);

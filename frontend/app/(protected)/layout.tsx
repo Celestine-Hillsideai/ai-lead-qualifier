@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getUserProfile } from "@/lib/subscription";
 import { UserNav } from "@/components/UserNav";
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -14,9 +15,11 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     redirect("/login");
   }
 
+  const profile = await getUserProfile(supabase, user.id);
+
   return (
     <>
-      <UserNav email={user.email ?? ""} />
+      <UserNav email={user.email ?? ""} plan={profile.plan} />
       {children}
     </>
   );
